@@ -1026,10 +1026,6 @@ public class BrowserActivity extends Activity
         // unregister network state listener
         unregisterReceiver(mNetworkStateIntentReceiver);
         WebView.disablePlatformNotifications();
-
-        if (mCustomView != null) {
-            mTabControl.getCurrentWebView().getWebChromeClient().onHideCustomView();
-        }
     }
 
     @Override
