@@ -158,12 +158,23 @@ class BrowserSettings extends Observable {
     public final static String PREF_CLEAR_GEOLOCATION_ACCESS =
             "privacy_clear_geolocation_access";
 
-    private static final String DESKTOP_USERAGENT = "Mozilla/5.0 (Macintosh; " +
-            "U; Intel Mac OS X 10_6_3; en-us) AppleWebKit/533.16 (KHTML, " +
-            "like Gecko) Version/5.0 Safari/533.16";
+    private static final String GINGERBREAD_USERAGENT = "Mozilla/5.0 Linux U; " +
+            "Android 2.3.4; en-us; " + Build.MODEL + " Build/GRJ22) AppleWebKit/533.1 "
+            "(KHTML, like Gecko) Version/4.0 Mobile Safari/533.1");
 
-    private static final String LINUX_DESKTOP_USERAGENT = "Mozilla/5.0 (X11; U; " +
-            "Linux x86_64; en-US; rv:1.9.2.11) Gecko/20101019 Firefox/3.6.11";
+    private static final String FROYO_USERAGENT = "Mozilla/5.0 (Linux; U; " +
+            "Android 2.2; en-us; " + Build.MODEL + " Build/FRF91) AppleWebKit/533.1 " +
+            "(KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
+
+    private static final String IE7_USERAGENT = "Mozilla/4.0 (compatible; MSIE 7.0; " +
+            "Windows NT 6.0; Trident/4.0)";
+
+    private static final String MAC_FIREFOX_USERAGENT = "Mozilla/5.0 (Macintosh; " +
+            "Intel Mac OS X 10.6; rv:2.0b8) Gecko/20100101 Firefox/4.0b8";
+
+    private static final String LINUX_CHROME_USERAGENT = "Mozilla/5.0 (X11; " +
+             "Linux i686) AppleWebKit/534.35 (KHTML, like Gecko) Ubuntu/10.10 " +
+             "Chromium/13.0.764.0 Chrome/13.0.764.0 Safari/534.35";
 
     private static final String IPHONE_USERAGENT = "Mozilla/5.0 (iPhone; U; " +
             "CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 " +
@@ -173,15 +184,9 @@ class BrowserSettings extends Observable {
             "CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 " +
             "(KHTML, like Gecko) Version/4.0.4 Mobile/7B367 Safari/531.21.10";
 
-    private static final String FROYO_USERAGENT = "Mozilla/5.0 (Linux; U; " +
-            "Android 2.2; en-us; " + Build.MODEL + " Build/FRF91) AppleWebKit/533.1 " +
-            "(KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
-
-    private static final String ECLAIR_USERAGENT = "Mozilla/5.0 (Linux; U; " +
-            "Android 2.1; en-us; " + Build.MODEL + " Build/ERD62) AppleWebKit/530.17 " +
-            "(KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
-
-    private static final String IE6_USERAGENT = "Mozilla/4.0 (compatible; MSIE 6.1; Windows XP)";
+    private static final String BLACKBERRY_USERAGENT = "Mozilla/5.0 (BlackBerry; " +
+            "U; BlackBerry 9800; en-US) AppleWebKit/534.8+ (KHTML, like Gecko) " +
+            "Version/6.0.0.448 Mobile Safari/534.8+";
 
     // Value to truncate strings when adding them to a TextView within
     // a ListView
@@ -225,25 +230,28 @@ class BrowserSettings extends Observable {
                     s.setUserAgentString(null);
                     break;
                 case 1:
-                    s.setUserAgentString(DESKTOP_USERAGENT);
+                    s.setUserAgentString(GINGERBREAD_USERAGENT);
                     break;
                 case 2:
-                    s.setUserAgentString(IPHONE_USERAGENT);
-                    break;
-                case 3:
-                    s.setUserAgentString(IPAD_USERAGENT);
-                    break;
-                case 4:
                     s.setUserAgentString(FROYO_USERAGENT);
                     break;
+                case 3:
+                    s.setUserAgentString(IE7_USERAGENT);
+                    break;
+                case 4:
+                    s.setUserAgentString(MAC_FIREFOX_USERAGENT);
+                    break;
                 case 5:
-                    s.setUserAgentString(LINUX_DESKTOP_USERAGENT);
+                    s.setUserAgentString(LINUX_CHROME_USERAGENT);
                     break;
                 case 6:
-                    s.setUserAgentString(IE6_USERAGENT);
+                    s.setUserAgentString(IPHONE_USERAGENT);
                     break;
                 case 7:
-                    s.setUserAgentString(ECLAIR_USERAGENT);
+                    s.setUserAgentString(IPAD_USERAGENT);
+                    break;
+                case 8:
+                    s.setUserAgentString(BLACKBERRY_USERAGENT);
                     break;
                 default:
                     s.setUserAgentString(null);

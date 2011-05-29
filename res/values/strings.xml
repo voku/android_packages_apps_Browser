@@ -456,24 +456,26 @@
     <!-- Do not tranlsate.  Development option -->
     <string-array name="pref_development_ua_choices" translatable="false">
         <item>Android</item>
+        <item>Gingerbread</item>
         <item>Froyo</item>
-        <item>Eclair</item>
-        <item>Linux Desktop</item>
-        <item>Mac Desktop</item>
+        <item>IE7</item>
+        <item>Mac Firefox</item>
+        <item>Linux Chrome</item>
         <item>iPhone</item>
         <item>iPad</item>
-        <item>IE6</item>
+        <item>Blackberry</item>
     </string-array>
     <!-- Do not tranlsate.  Development option -->
     <string-array name="pref_development_ua_values" translatable="false">
         <item>0</item>
-        <item>4</item>
-        <item>7</item>
-        <item>5</item>
         <item>1</item>
         <item>2</item>
         <item>3</item>
+        <item>4</item>
+        <item>5</item>
         <item>6</item>
+        <item>7</item>
+        <item>8</item>
     </string-array>
     <string name="pref_development_error_console" translatable="false">Show JavaScript Console</string>
     <!-- Settings screen, setting option name -->
