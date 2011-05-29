@@ -160,7 +160,7 @@ class BrowserSettings extends Observable {
 
     private static final String GINGERBREAD_USERAGENT = "Mozilla/5.0 Linux U; " +
             "Android 2.3.4; en-us; " + Build.MODEL + " Build/GRJ22) AppleWebKit/533.1 " +
-            "(KHTML, like Gecko) Version/4.0 Mobile Safari/533.1");
+            "(KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
 
     private static final String FROYO_USERAGENT = "Mozilla/5.0 (Linux; U; " +
             "Android 2.2; en-us; " + Build.MODEL + " Build/FRF91) AppleWebKit/533.1 " +
