@@ -458,6 +458,7 @@
         <item>Android</item>
         <item>Gingerbread</item>
         <item>Froyo</item>
+        <item>Eclair</item>
         <item>IE7</item>
         <item>Mac Firefox</item>
         <item>Linux Chrome</item>
@@ -476,6 +477,7 @@
         <item>6</item>
         <item>7</item>
         <item>8</item>
+        <item>9</item>
     </string-array>
     <string name="pref_development_error_console" translatable="false">Show JavaScript Console</string>
     <!-- Settings screen, setting option name -->

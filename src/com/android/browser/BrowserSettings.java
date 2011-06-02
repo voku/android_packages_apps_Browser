@@ -166,6 +166,10 @@ class BrowserSettings extends Observable {
             "Android 2.2; en-us; " + Build.MODEL + " Build/FRF91) AppleWebKit/533.1 " +
             "(KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
 
+    private static final String ECLAIR_USERAGENT = "Mozilla/5.0 (Linux; U; " +
+            "Android 2.1; en-us; " + Build.MODEL + " Build/ERD62) AppleWebKit/530.17 " +
+            "(KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
+
     private static final String IE7_USERAGENT = "Mozilla/4.0 (compatible; MSIE 7.0; " +
             "Windows NT 6.0; Trident/4.0)";
 
@@ -236,21 +240,24 @@ class BrowserSettings extends Observable {
                     s.setUserAgentString(FROYO_USERAGENT);
                     break;
                 case 3:
-                    s.setUserAgentString(IE7_USERAGENT);
+                    s.setUserAgentString(ECLAIR_USERAGENT);
                     break;
                 case 4:
-                    s.setUserAgentString(MAC_FIREFOX_USERAGENT);
+                    s.setUserAgentString(IE7_USERAGENT);
                     break;
                 case 5:
-                    s.setUserAgentString(LINUX_CHROME_USERAGENT);
+                    s.setUserAgentString(MAC_FIREFOX_USERAGENT);
                     break;
                 case 6:
-                    s.setUserAgentString(IPHONE_USERAGENT);
+                    s.setUserAgentString(LINUX_CHROME_USERAGENT);
                     break;
                 case 7:
-                    s.setUserAgentString(IPAD_USERAGENT);
+                    s.setUserAgentString(IPHONE_USERAGENT);
                     break;
                 case 8:
+                    s.setUserAgentString(IPAD_USERAGENT);
+                    break;
+                case 9:
                     s.setUserAgentString(BLACKBERRY_USERAGENT);
                     break;
                 default:
