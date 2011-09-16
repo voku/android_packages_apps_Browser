@@ -226,8 +226,6 @@ public class BrowserActivity extends Activity
         // Keep a settings instance handy.
         mSettings = BrowserSettings.getInstance();
 
-        mSettings.updateRlzValues(this);
-
         // If this was a web search request, pass it on to the default web
         // search provider and finish this activity.
         if (handleWebSearchIntent(getIntent())) {
@@ -532,12 +530,6 @@ public class BrowserActivity extends Activity
 
             final String appId = intent
                     .getStringExtra(Browser.EXTRA_APPLICATION_ID);
-            if (!TextUtils.isEmpty(urlData.mUrl) &&
-                    urlData.mUrl.startsWith("javascript:")) {
-                // Always open javascript: URIs in new tabs
-                openTabAndShow(urlData, true, appId);
-                return;
-            }
             if ((Intent.ACTION_VIEW.equals(action)
                     // If a voice search has no appId, it means that it came
                     // from the browser.  In that case, reuse the current tab.
@@ -698,6 +690,13 @@ public class BrowserActivity extends Activity
             final String action = intent.getAction();
             if (Intent.ACTION_VIEW.equals(action)) {
                 url = smartUrlFilter(intent.getData());
+                if (url != null && url.startsWith("content:")) {
+                    /* Append mimetype so webview knows how to display */
+                    String mimeType = intent.resolveType(getContentResolver());
+                    if (mimeType != null) {
+                        url += "?" + mimeType;
+                    }
+                }
                 if (url != null && url.startsWith("http")) {
                     final Bundle pairs = intent
                             .getBundleExtra(Browser.EXTRA_HEADERS);
@@ -707,17 +706,6 @@ public class BrowserActivity extends Activity
                         while (iter.hasNext()) {
                             String key = iter.next();
                             headers.put(key, pairs.getString(key));
-                        }
-                    }
-
-                    // AppId will be set to the Browser for Search Bar initiated searches
-                    final String appId = intent.getStringExtra(Browser.EXTRA_APPLICATION_ID);
-                    if (getPackageName().equals(appId)) {
-                        String rlz = mSettings.getRlzValue();
-                        Uri uri = Uri.parse(url);
-                        if (!rlz.isEmpty() && needsRlz(uri)) {
-                            Uri rlzUri = addRlzParameter(uri, rlz);
-                            url = rlzUri.toString();
                         }
                     }
                 }
@@ -1894,6 +1882,7 @@ public class BrowserActivity extends Activity
     // url isn't null, it will load the given url.
     /* package */Tab openTabAndShow(UrlData urlData, boolean closeOnExit,
             String appId) {
+
         Tab currentTab = mTabControl.getCurrentTab();
         if (!mTabControl.canCreateNewTab()) {
             Tab closeTab = mTabControl.getTab(0);
@@ -1914,7 +1903,7 @@ public class BrowserActivity extends Activity
         // animation behavior.
         mTabControl.setCurrentTab(tab);
         attachTabToContentView(tab);
-        if (!urlData.isEmpty()) {
+        if (urlData != "") {
             loadUrlDataIn(tab, urlData);
         }
         return tab;
@@ -2775,9 +2764,8 @@ public class BrowserActivity extends Activity
         }
 
         // The "about:" schemes are internal to the browser; don't want these to
-        // be dispatched to other apps. Similarly, javascript: schemas are private
-        // to the page
-        if (url.startsWith("about:") || url.startsWith("javascript:")) {
+        // be dispatched to other apps.
+        if (url.startsWith("about:")) {
             return false;
         }
 
@@ -3790,7 +3778,7 @@ public class BrowserActivity extends Activity
             "(?i)" + // switch on case insensitive matching
             "(" +    // begin group for schema
             "(?:http|https|file):\\/\\/" +
-            "|(?:inline|data|about|javascript):" +
+            "|(?:inline|data|about|content|javascript):" +
             ")" +
             "(.*)" );
 
@@ -4144,20 +4132,4 @@ public class BrowserActivity extends Activity
     };
 
     /* package */ static final UrlData EMPTY_URL_DATA = new UrlData(null);
-
-    private static boolean needsRlz(Uri uri) {
-        if ((uri.getQueryParameter("rlz") == null) &&
-            (uri.getQueryParameter("q") != null) &&
-            UrlUtils.isGoogleUri(uri)) {
-            return true;
-        }
-        return false;
-    }
-
-    private static Uri addRlzParameter(Uri uri, String rlz) {
-        if (rlz.isEmpty()) {
-            return uri;
-        }
-        return uri.buildUpon().appendQueryParameter("rlz", rlz).build();
-    }
 }

@@ -43,7 +43,6 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.provider.Browser;
 import android.speech.RecognizerResultsIntent;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -1867,8 +1866,8 @@ class Tab {
     // Populate the picker data using the given history item and the current top
     // WebView.
     private void populatePickerData(WebHistoryItem item) {
-        if (item != null && !TextUtils.isEmpty(item.getUrl())) {
-            mPickerData = new PickerData();
+        mPickerData = new PickerData();
+        if (item != null) {
             mPickerData.mUrl = item.getUrl();
             mPickerData.mTitle = item.getTitle();
             mPickerData.mFavicon = item.getFavicon();
@@ -1955,6 +1954,7 @@ class Tab {
         // Restore the internal state even if the WebView fails to restore.
         // This will maintain the app id, original url and close-on-exit values.
         mSavedState = null;
+        mPickerData = null;
         mCloseOnExit = b.getBoolean(CLOSEONEXIT);
         mAppId = b.getString(APPID);
         mOriginalUrl = b.getString(ORIGINALURL);

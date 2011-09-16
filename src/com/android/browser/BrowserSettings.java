@@ -23,22 +23,15 @@ import com.android.browser.search.SearchEngines;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.ContentObserver;
 import android.os.Build;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import android.provider.Browser.BookmarkColumns;
 import android.provider.Settings;
 import android.util.Log;
 import android.webkit.CookieManager;
@@ -158,27 +151,12 @@ class BrowserSettings extends Observable {
     public final static String PREF_CLEAR_GEOLOCATION_ACCESS =
             "privacy_clear_geolocation_access";
 
-    private static final String GINGERBREAD_USERAGENT = "Mozilla/5.0 Linux U; " +
-            "Android 2.3.4; en-us; " + Build.MODEL + " Build/GRJ22) AppleWebKit/533.1 " +
-            "(KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
+    private static final String DESKTOP_USERAGENT = "Mozilla/5.0 (Macintosh; " +
+            "U; Intel Mac OS X 10_6_3; en-us) AppleWebKit/533.16 (KHTML, " +
+            "like Gecko) Version/5.0 Safari/533.16";
 
-    private static final String FROYO_USERAGENT = "Mozilla/5.0 (Linux; U; " +
-            "Android 2.2; en-us; " + Build.MODEL + " Build/FRF91) AppleWebKit/533.1 " +
-            "(KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
-
-    private static final String ECLAIR_USERAGENT = "Mozilla/5.0 (Linux; U; " +
-            "Android 2.1; en-us; " + Build.MODEL + " Build/ERD62) AppleWebKit/530.17 " +
-            "(KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
-
-    private static final String IE7_USERAGENT = "Mozilla/4.0 (compatible; MSIE 7.0; " +
-            "Windows NT 6.0; Trident/4.0)";
-
-    private static final String MAC_FIREFOX_USERAGENT = "Mozilla/5.0 (Macintosh; " +
-            "Intel Mac OS X 10.6; rv:2.0b8) Gecko/20100101 Firefox/4.0b8";
-
-    private static final String LINUX_CHROME_USERAGENT = "Mozilla/5.0 (X11; " +
-             "Linux i686) AppleWebKit/534.35 (KHTML, like Gecko) Ubuntu/10.10 " +
-             "Chromium/13.0.764.0 Chrome/13.0.764.0 Safari/534.35";
+    private static final String LINUX_DESKTOP_USERAGENT = "Mozilla/5.0 (X11; U; " +
+            "Linux x86_64; en-US; rv:1.9.2.11) Gecko/20101019 Firefox/3.6.11";
 
     private static final String IPHONE_USERAGENT = "Mozilla/5.0 (iPhone; U; " +
             "CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 " +
@@ -188,18 +166,19 @@ class BrowserSettings extends Observable {
             "CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 " +
             "(KHTML, like Gecko) Version/4.0.4 Mobile/7B367 Safari/531.21.10";
 
-    private static final String BLACKBERRY_USERAGENT = "Mozilla/5.0 (BlackBerry; " +
-            "U; BlackBerry 9800; en-US) AppleWebKit/534.8+ (KHTML, like Gecko) " +
-            "Version/6.0.0.448 Mobile Safari/534.8+";
+    private static final String FROYO_USERAGENT = "Mozilla/5.0 (Linux; U; " +
+            "Android 2.2; en-us; " + Build.MODEL + " Build/FRF91) AppleWebKit/533.1 " +
+            "(KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
+
+    private static final String ECLAIR_USERAGENT = "Mozilla/5.0 (Linux; U; " +
+            "Android 2.1; en-us; " + Build.MODEL + " Build/ERD62) AppleWebKit/530.17 " +
+            "(KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
+
+    private static final String IE6_USERAGENT = "Mozilla/4.0 (compatible; MSIE 6.1; Windows XP)";
 
     // Value to truncate strings when adding them to a TextView within
     // a ListView
     public final static int MAX_TEXTVIEW_LEN = 80;
-
-    public static final String RLZ_PROVIDER = "com.google.android.partnersetup.rlzappprovider";
-    public static final Uri RLZ_PROVIDER_URI = Uri.parse("content://" + RLZ_PROVIDER + "/");
-
-    private String mRlzValue = "";
 
     private TabControl mTabControl;
 
@@ -234,31 +213,25 @@ class BrowserSettings extends Observable {
                     s.setUserAgentString(null);
                     break;
                 case 1:
-                    s.setUserAgentString(GINGERBREAD_USERAGENT);
+                    s.setUserAgentString(DESKTOP_USERAGENT);
                     break;
                 case 2:
-                    s.setUserAgentString(FROYO_USERAGENT);
-                    break;
-                case 3:
-                    s.setUserAgentString(ECLAIR_USERAGENT);
-                    break;
-                case 4:
-                    s.setUserAgentString(IE7_USERAGENT);
-                    break;
-                case 5:
-                    s.setUserAgentString(MAC_FIREFOX_USERAGENT);
-                    break;
-                case 6:
-                    s.setUserAgentString(LINUX_CHROME_USERAGENT);
-                    break;
-                case 7:
                     s.setUserAgentString(IPHONE_USERAGENT);
                     break;
-                case 8:
+                case 3:
                     s.setUserAgentString(IPAD_USERAGENT);
                     break;
-                case 9:
-                    s.setUserAgentString(BLACKBERRY_USERAGENT);
+                case 4:
+                    s.setUserAgentString(FROYO_USERAGENT);
+                    break;
+                case 5:
+                    s.setUserAgentString(LINUX_DESKTOP_USERAGENT);
+                    break;
+                case 6:
+                    s.setUserAgentString(IE6_USERAGENT);
+                    break;
+                case 7:
+                    s.setUserAgentString(ECLAIR_USERAGENT);
                     break;
                 default:
                     s.setUserAgentString(null);
@@ -291,8 +264,6 @@ class BrowserSettings extends Observable {
             s.setNeedInitialFocus(false);
             // Browser supports multiple windows
             s.setSupportMultipleWindows(true);
-            // disable content url access
-            s.setAllowContentAccess(false);
 
             // HTML5 API flags
             s.setAppCacheEnabled(b.appCacheEnabled);
@@ -723,116 +694,5 @@ class BrowserSettings extends Observable {
         domStorageEnabled = true;
         geolocationEnabled = true;
         workersEnabled = true;  // only affects V8. JSC does not have a similar setting
-    }
-
-    /*package*/ String getRlzValue() {
-        return mRlzValue;
-    }
-
-    /*package*/ void updateRlzValues(Context context) {
-        // Use AsyncTask because this queries both RlzProvider and Bookmarks URIs
-        new RlzUpdateTask(context).execute();
-    }
-
-    private class RlzUpdateTask extends AsyncTask<Void, Void, Void> {
-        private final Context context;
-
-        public RlzUpdateTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected Void doInBackground(Void...unused) {
-            String rlz = retrieveRlzValue(context);
-            if (!rlz.isEmpty()) {
-                mRlzValue = rlz;
-                updateHomePageRlzParameter(context);
-                updateBookmarksRlzParameter(context);
-            }
-            return null;
-        }
-    }
-
-    // Update RLZ value if present in Home page
-    private void updateHomePageRlzParameter(Context context) {
-        Uri uri = Uri.parse(homeUrl);
-        if ((uri.getQueryParameter("rlz") != null) && UrlUtils.isGoogleUri(uri)) {
-            String newHomeUrl = updateRlzParameter(homeUrl);
-            if (!homeUrl.equals(newHomeUrl)) {
-                setHomePage(context, newHomeUrl);
-            }
-        }
-    }
-
-    // Update RLZ value if present in bookmarks
-    private void updateBookmarksRlzParameter(Context context) {
-        Cursor cur = null;
-        try {
-            cur = context.getContentResolver().query(Browser.BOOKMARKS_URI,
-                new String[] { BookmarkColumns._ID, BookmarkColumns.URL },
-                "url LIKE '%rlz=%'", null, null);
-            if ((cur == null) || (cur.getCount() == 0)) {
-                return;
-            }
-            for (cur.moveToFirst(); !cur.isAfterLast(); cur.moveToNext()) {
-                long id = cur.getLong(0);
-                String url = cur.getString(1);
-                if ((url == null) || url.isEmpty()) {
-                    continue;
-                }
-
-                Uri uri = Uri.parse(url);
-                if ((uri.getQueryParameter("rlz") != null) && UrlUtils.isGoogleUri(uri)) {
-                    String newUrl = updateRlzParameter(url);
-                    if (!url.equals(newUrl)) {
-                        ContentValues values = new ContentValues();
-                        values.put(BookmarkColumns.URL, newUrl);
-                        Uri bookmarkUri = ContentUris.withAppendedId(Browser.BOOKMARKS_URI, id);
-                        context.getContentResolver().update(bookmarkUri, values, null, null);
-                    }
-                }
-            }
-        } finally {
-            if (cur != null) {
-                cur.close();
-            }
-        }
-    }
-
-    private String updateRlzParameter(String url) {
-        Uri uri = Uri.parse(url);
-        String oldRlz = uri.getQueryParameter("rlz");
-        if (oldRlz != null) {
-            return url.replace("rlz=" + oldRlz, "rlz=" + mRlzValue);
-        }
-        return url;
-    }
-
-    // Retrieve the RLZ value from the Rlz Provider
-    private static String retrieveRlzValue(Context context) {
-        String rlz = "";
-        PackageManager pm = context.getPackageManager();
-        if (pm.resolveContentProvider(RLZ_PROVIDER, 0) == null) {
-            return rlz;
-        }
-
-        String ap = context.getResources().getString(R.string.rlz_access_point);
-        if (ap.isEmpty()) {
-            return rlz;
-        }
-
-        Uri rlzUri = Uri.withAppendedPath(RLZ_PROVIDER_URI, ap);
-        Cursor cur = null;
-        try {
-            cur = context.getContentResolver().query(rlzUri, null, null, null, null);
-            if (cur != null && cur.moveToFirst() && !cur.isNull(0)) {
-                rlz = cur.getString(0);
-            }
-        } finally {
-            if (cur != null) {
-                cur.close();
-            }
-        }
-        return rlz;
     }
 }

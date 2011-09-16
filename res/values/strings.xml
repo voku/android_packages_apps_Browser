@@ -456,28 +456,24 @@
     <!-- Do not tranlsate.  Development option -->
     <string-array name="pref_development_ua_choices" translatable="false">
         <item>Android</item>
-        <item>Gingerbread</item>
         <item>Froyo</item>
         <item>Eclair</item>
-        <item>IE7</item>
-        <item>Mac Firefox</item>
-        <item>Linux Chrome</item>
+        <item>Linux Desktop</item>
+        <item>Mac Desktop</item>
         <item>iPhone</item>
         <item>iPad</item>
-        <item>Blackberry</item>
+        <item>IE6</item>
     </string-array>
     <!-- Do not tranlsate.  Development option -->
     <string-array name="pref_development_ua_values" translatable="false">
         <item>0</item>
+        <item>4</item>
+        <item>7</item>
+        <item>5</item>
         <item>1</item>
         <item>2</item>
         <item>3</item>
-        <item>4</item>
-        <item>5</item>
         <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
     </string-array>
     <string name="pref_development_error_console" translatable="false">Show JavaScript Console</string>
     <!-- Settings screen, setting option name -->
@@ -773,7 +769,4 @@
     <string name="incog_tab">Enable Incognito Mode</string>
     <string name="dis_incog_tab">Disable Incognito Mode</string>
     <string name="pref_select_user_agent">Select User Agent</string>
-
-    <!-- Access point for RLZ tracking. -->
-    <string name="rlz_access_point" translatable="false">Y1</string>
 </resources>
