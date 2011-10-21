@@ -1903,7 +1903,7 @@ public class BrowserActivity extends Activity
         // animation behavior.
         mTabControl.setCurrentTab(tab);
         attachTabToContentView(tab);
-        if (urlData != "") {
+        if (urlData != null) {
             loadUrlDataIn(tab, urlData);
         }
         return tab;
