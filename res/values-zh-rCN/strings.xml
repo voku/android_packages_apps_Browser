@@ -19,6 +19,10 @@
     <string name="application_name" msgid="1935869255545976415">"浏览器"</string>
     <string name="choose_upload" msgid="3649366287575002063">"选择要上传的文件"</string>
     <string name="new_tab" msgid="4505722538297295141">"新窗口"</string>
+
+    <!-- Name of menu item of a new tab. Also used in the title bar when displaying a new tab -->
+    <string name="incog_tab">隐身窗口</string>
+
     <string name="active_tabs" msgid="3050623868203544623">"窗口"</string>
     <string name="tab_bookmarks" msgid="2305793036003473653">"书签"</string>
     <string name="tab_most_visited" msgid="1077402532455000703">"访问最多"</string>
@@ -300,7 +304,6 @@
     <string name="progress_dialog_setting_wallpaper" msgid="4871900779338536674">"正在设置壁纸..."</string>
     <string name="pref_show_zoom_controls">显示视觉缩放控制</string>
     <string name="pref_full_screen_mode">全屏</string>
-    <string name="incog_tab">启用隐私模式</string>
     <string name="dis_incog_tab">关闭隐私模式</string>
     <string name="pref_select_user_agent">选择用户代理</string>
 </resources>
