@@ -340,7 +340,9 @@ public class BrowserActivity extends Activity
                     }
                     if (permissionOk) {
                         PluginManager.getInstance(BrowserActivity.this)
-                                .refreshPlugins(true);
+                                .refreshPlugins(
+                                        Intent.ACTION_PACKAGE_ADDED
+                                                .equals(action));
                     }
                 }
             }
@@ -1203,6 +1205,7 @@ public class BrowserActivity extends Activity
                 break;
             // -- Browser context menu
             case R.id.open_context_menu_id:
+            case R.id.open_newtab_context_menu_id:
             case R.id.bookmark_context_menu_id:
             case R.id.save_link_context_menu_id:
             case R.id.share_link_context_menu_id:
@@ -1717,7 +1720,7 @@ public class BrowserActivity extends Activity
         inflater.inflate(R.menu.browsercontext, menu);
 
         // Show the correct menu group
-        final String extra = result.getExtra();
+        String extra = result.getExtra();
         menu.setGroupVisible(R.id.PHONE_MENU,
                 type == WebView.HitTestResult.PHONE_TYPE);
         menu.setGroupVisible(R.id.EMAIL_MENU,
@@ -1774,23 +1777,8 @@ public class BrowserActivity extends Activity
                 titleView.setText(extra);
                 menu.setHeaderView(titleView);
                 // decide whether to show the open link in new tab option
-                boolean showNewTab = mTabControl.canCreateNewTab();
-                MenuItem newTabItem
-                        = menu.findItem(R.id.open_newtab_context_menu_id);
-                newTabItem.setVisible(showNewTab);
-                if (showNewTab) {
-                    newTabItem.setOnMenuItemClickListener(
-                            new MenuItem.OnMenuItemClickListener() {
-                                public boolean onMenuItemClick(MenuItem item) {
-                                    final Tab parent = mTabControl.getCurrentTab();
-                                    final Tab newTab = openTab(extra);
-                                    if (newTab != parent) {
-                                        parent.addChildTab(newTab);
-                                    }
-                                    return true;
-                                }
-                            });
-                }
+                menu.findItem(R.id.open_newtab_context_menu_id).setVisible(
+                        mTabControl.canCreateNewTab());
                 menu.findItem(R.id.bookmark_context_menu_id).setVisible(
                         Bookmarks.urlHasAcceptableScheme(extra));
                 PackageManager pm = getPackageManager();
@@ -2157,7 +2145,6 @@ public class BrowserActivity extends Activity
         }
         mTabControl.setCurrentTab(mTabControl.getTab(currentIndex));
         resetTitleIconAndProgress();
-        updateLockIconToLatest();
     }
 
     /* package */ void goBackOnePageOrQuit() {
@@ -2371,6 +2358,13 @@ public class BrowserActivity extends Activity
                         case R.id.open_context_menu_id:
                         case R.id.view_image_context_menu_id:
                             loadUrlFromContext(getTopWindow(), url);
+                            break;
+                        case R.id.open_newtab_context_menu_id:
+                            final Tab parent = mTabControl.getCurrentTab();
+                            final Tab newTab = openTab(url);
+                            if (newTab != parent) {
+                                parent.addChildTab(newTab);
+                            }
                             break;
                         case R.id.bookmark_context_menu_id:
                             Intent intent = new Intent(BrowserActivity.this,
@@ -2925,85 +2919,15 @@ public class BrowserActivity extends Activity
      * The Object used to inform the WebView of the file to upload.
      */
     private ValueCallback<Uri> mUploadMessage;
-    private String mCameraFilePath;
 
-    void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
-
-        final String imageMimeType = "image/*";
-        final String imageSourceKey = "source";
-        final String imageSourceValueCamera = "camera";
-        final String imageSourceValueGallery = "gallery";
-
-        // image source can be 'gallery' or 'camera'.
-        String imageSource = "";
-
-        // We add the camera intent if there was no accept type (or '*/*') or 'image/*'.
-        boolean addCameraIntent = true;
-
+    void openFileChooser(ValueCallback<Uri> uploadMsg) {
         if (mUploadMessage != null) return;
         mUploadMessage = uploadMsg;
-
-        // Parse the accept type.
-        String params[] = acceptType.split(";");
-        String mimeType = params[0];
-
-        for (String p : params) {
-            String[] keyValue = p.split("=");
-            if (keyValue.length == 2) {
-                // Process key=value parameters.
-                if (imageSourceKey.equals(keyValue[0])) {
-                    imageSource = keyValue[1];
-                }
-            }
-        }
-
-        // This intent will display the standard OPENABLE file picker.
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
         i.addCategory(Intent.CATEGORY_OPENABLE);
-
-        // Create an intent to add to the standard file picker that will
-        // capture an image from the camera. We'll combine this intent with
-        // the standard OPENABLE picker unless the web developer specifically
-        // requested the camera or gallery be opened by passing a parameter
-        // in the accept type.
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File externalDataDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DCIM);
-        File cameraDataDir = new File(externalDataDir.getAbsolutePath() +
-                File.separator + "browser-photos");
-        cameraDataDir.mkdirs();
-        mCameraFilePath = cameraDataDir.getAbsolutePath() + File.separator +
-                System.currentTimeMillis() + ".jpg";
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(mCameraFilePath)));
-
-        if (mimeType.equals(imageMimeType)) {
-            i.setType(imageMimeType);
-            if (imageSource.equals(imageSourceValueCamera)) {
-                // Specified 'image/*' and requested the camera, so go ahead and launch the camera
-                // directly.
-                BrowserActivity.this.startActivityForResult(cameraIntent, FILE_SELECTED);
-                return;
-            } else if (imageSource.equals(imageSourceValueGallery)) {
-                // Specified gallery as the source, so don't want to consider the camera.
-                addCameraIntent = false;
-            }
-        } else {
-            i.setType("*/*");
-        }
-
-        // Combine the chooser and the extra choices (like camera)
-        Intent chooser = new Intent(Intent.ACTION_CHOOSER);
-        chooser.putExtra(Intent.EXTRA_INTENT, i);
-
-        if (addCameraIntent) {
-            // Add the camera Intent
-            Intent[] choices = new Intent[1];
-            choices[0] = cameraIntent;
-            chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, choices);
-        }
-
-        chooser.putExtra(Intent.EXTRA_TITLE, getString(R.string.choose_upload));
-        BrowserActivity.this.startActivityForResult(chooser, FILE_SELECTED);
+        i.setType("*/*");
+        BrowserActivity.this.startActivityForResult(Intent.createChooser(i,
+                getString(R.string.choose_upload)), FILE_SELECTED);
     }
 
     // -------------------------------------------------------------------------
@@ -3190,10 +3114,7 @@ public class BrowserActivity extends Activity
      * Update the lock icon to correspond to our latest state.
      */
     private void updateLockIconToLatest() {
-        Tab t = mTabControl.getCurrentTab();
-        if (t != null) {
-            updateLockIconImage(t.getLockIconType());
-        }
+        updateLockIconImage(mTabControl.getCurrentTab().getLockIconType());
     }
 
     /**
@@ -3723,23 +3644,8 @@ public class BrowserActivity extends Activity
                 if (null == mUploadMessage) break;
                 Uri result = intent == null || resultCode != RESULT_OK ? null
                         : intent.getData();
-
-                // As we ask the camera to save the result of the user taking
-                // a picture, the camera application does not return anything other
-                // than RESULT_OK. So we need to check whether the file we expected
-                // was written to disk in the in the case that we
-                // did not get an intent returned but did get a RESULT_OK. If it was,
-                // we assume that this result has came back from the camera.
-                if (result == null && intent == null && resultCode == RESULT_OK) {
-                    File cameraFile = new File(mCameraFilePath);
-                    if (cameraFile.exists()) {
-                        result = Uri.fromFile(cameraFile);
-                    }
-                }
-
                 mUploadMessage.onReceiveValue(result);
                 mUploadMessage = null;
-                mCameraFilePath = null;
                 break;
             default:
                 break;
